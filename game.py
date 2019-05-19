@@ -1,7 +1,8 @@
 import chess
 import random
+from IPython.display import display, clear_output
 
-from ais import Random
+from players import Random, Human
 
 class Game():
 
@@ -12,13 +13,15 @@ class Game():
 
         board = self.board
         try:
+            display(self.board)
             while not board.is_game_over(claim_draw=True):
                 if board.turn == chess.WHITE:
                     uci = player1.move()
                 else:
                     uci = player2.move()
                 board.push_uci(uci)
-                print(self.board)
+                clear_output(wait=True)
+                display(self.board)
         except KeyboardInterrupt:
             msg = "Game interrupted!"
             return (None, msg, board)
@@ -44,7 +47,7 @@ class Game():
 if __name__ == "__main__":
 
     game = Game()
-    player1 = Random(game.board)
-    player2 = Random(game.board)
+    player1 = Random(game)
+    player2 = Random(game)
 
     game.play_game(player1, player2)
