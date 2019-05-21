@@ -37,6 +37,7 @@ class Game():
             msg = "draw: insufficient material"
         elif board.can_claim_draw():
             msg = "draw: claim"
+        print(board.result())
         print(msg)
 
         return (result, msg, board)
