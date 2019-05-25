@@ -1,54 +1,111 @@
 import chess
 import random
+import time
 
 class Classic:
 
-    def __init__(self, game):
-        self.game = game
+    def __init__(self):
+        self.time_limit = 2
+        self.start_time = None
         self.MAXVAL = 10000
-        self.values = {chess.PAWN:1,chess.KNIGHT:3,chess.BISHOP:3,chess.ROOK:5,chess.QUEEN:9,chess.KING:0}
+        self.best_move = None
 
-    def move(self):
-        raise NotImplementedError
+    def move(self, board):
+        self.start_time = time.time()
 
-    def score(self):
-        if self.board.is_game_over():
-            if self.board.result() == "1-0":
+        depth = 1
+        while (True):
+            move = self.alphabeta(board, depth)
+            if move:
+                self.best_move = move
+            depth += 1
+
+            if self.time_up():
+                return self.best_move
+
+    def alphabeta(self, board, depth, alpha=float("-inf"), beta=float("inf")):
+        best_current_move = list(board.legal_moves)[0]
+        for m in board.legal_moves:
+            if self.time_up():
+                return best_current_move.uci()
+            new_board = board.copy()
+            new_board.push(m)
+            score = self.min_value(new_board, depth-1, alpha, beta)
+            if score > alpha:
+                alpha = score
+                best_current_move = m
+        return best_current_move.uci()
+
+    def min_value(self, board, depth, alpha, beta):
+        if depth == 0:
+            return self.score(board)
+        for m in board.legal_moves:
+            if self.time_up():
+                break
+            new_board = board.copy()
+            new_board.push(m)
+            score = self.max_value(new_board, depth-1, alpha, beta)
+            if score < beta:
+                beta = score
+                if beta <= alpha:
+                    break
+        return beta
+
+    def max_value(self, board, depth, alpha, beta):
+        if depth == 0:
+            return self.score(board)
+        for m in board.legal_moves:
+            if self.time_up():
+                break
+            new_board = board.copy()
+            new_board.push(m)
+            score = self.min_value(new_board, depth-1, alpha, beta)
+            if score > alpha:
+                alpha = score
+                if alpha >= beta:
+                    break
+        return alpha
+
+    def score(self, board):
+        if board.is_game_over():
+            if board.result() == "1-0":
                 return self.MAXVAL
-            elif self.board.result() == "0-1":
+            elif board.result() == "0-1":
                 return -self.MAXVAL
             else:
                 return 0
 
+        values = {chess.PAWN:1,chess.KNIGHT:3,chess.BISHOP:3,chess.ROOK:5,chess.QUEEN:9,chess.KING:0}
         score = 0.0
-        piece_map = self.game.board.piece_map()
+        # score += 10 if board.is_capture(move)
+        piece_map = board.piece_map()
         for x in piece_map:
-            piece_value = self.values[piece_map[x].piece_type]
-            if piece_map[x].color == chess.WHITE:
+            piece_value = values[piece_map[x].piece_type]
+            if piece_map[x].color == board.turn:
                 score += piece_value
             else:
                 score -= piece_value
 
-        actual_turn = self.board.turn
-        self.board.turn = chess.WHITE
-        score += 0.1 * self.board.legal_moves.count()
-        self.board.turn = chess.BLACK
-        score -= 0.1 * self.board.legal_moves.count()
-        self.board.turn = actual_turn
+        # actual_turn = board.turn
+        # board.turn = chess.WHITE
+        # score += 0.1 * board.legal_moves.count()
+        # board.turn = chess.BLACK
+        # score -= 0.1 * board.legal_moves.count()
+        # board.turn = actual_turn
 
         return score
 
+    def time_up(self):
+        return time.time() > self.start_time + self.time_limit
+
 class Human:
 
-    def __init__(self, game):
-        self.game = game
-
-    def move(self):
-        uci = self.get_move("%s's move [q to quit]> " % self.game.who(self.game.board.turn))
-        legal_uci_moves = [move.uci() for move in self.game.board.legal_moves]
+    def move(self, board):
+        uci = self.get_move("Your move: ")
+        legal_uci_moves = [move.uci() for move in board.legal_moves]
         while uci not in legal_uci_moves:
             print("Legal moves: " + (",".join(sorted(legal_uci_moves))))
-            uci = self.get_move("%s's move[q to quit]> " % self.game.who(self.game.board.turn))
+            uci = self.get_move("%s's move[q to quit]> " % board.who(board.turn))
         return uci
 
     def get_move(self, prompt):
@@ -63,9 +120,6 @@ class Human:
 
 class Random:
 
-    def __init__(self, game):
-        self.game = game
-
-    def move(self):
-        move = random.choice(list(self.game.board.legal_moves))
+    def move(self, board):
+        move = random.choice(list(board.legal_moves))
         return move.uci()

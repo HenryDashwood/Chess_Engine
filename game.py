@@ -11,36 +11,35 @@ class Game():
 
     def play_game(self, player1, player2):
 
-        board = self.board
         try:
             display(self.board)
-            while not board.is_game_over(claim_draw=True):
-                if board.turn == chess.WHITE:
-                    uci = player1.move()
+            while not self.board.is_game_over(claim_draw=True):
+                if self.board.turn == chess.WHITE:
+                    uci = player1.move(self.board)
                 else:
-                    uci = player2.move()
-                board.push_uci(uci)
+                    uci = player2.move(self.board)
+                self.board.push_uci(uci)
                 clear_output(wait=True)
                 display(self.board)
         except KeyboardInterrupt:
             msg = "Game interrupted!"
-            return (None, msg, board)
+            return (None, msg, self.board)
         result = None
-        if board.is_checkmate():
-            msg = "checkmate: " + self.who(not board.turn) + " wins!"
-            result = not board.turn
-        elif board.is_stalemate():
+        if self.board.is_checkmate():
+            msg = "checkmate: " + self.who(not self.board.turn) + " wins!"
+            result = not self.board.turn
+        elif self.board.is_stalemate():
             msg = "draw: stalemate"
-        elif board.is_fivefold_repetition():
+        elif self.board.is_fivefold_repetition():
             msg = "draw: 5-fold repetition"
-        elif board.is_insufficient_material():
+        elif self.board.is_insufficient_material():
             msg = "draw: insufficient material"
-        elif board.can_claim_draw():
+        elif self.board.can_claim_draw():
             msg = "draw: claim"
-        print(board.result())
+        print(self.board.result())
         print(msg)
 
-        return (result, msg, board)
+        return (result, msg, self.board)
 
     def who(self, player):
         return "White" if player == chess.WHITE else "Black"
