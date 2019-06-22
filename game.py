@@ -2,15 +2,13 @@ import chess
 import random
 from IPython.display import display, clear_output
 
-from players import Random, Human
+from players import Naive, Human, Minimax
 
 class Game():
-
     def __init__(self):
         self.board = chess.Board()
 
     def play_game(self, player1, player2):
-
         try:
             display(self.board)
             while not self.board.is_game_over(claim_draw=True):
@@ -21,33 +19,17 @@ class Game():
                 self.board.push_uci(uci)
                 clear_output(wait=True)
                 display(self.board)
+                print()
+            clear_output(wait=True)
+            return self.board
         except KeyboardInterrupt:
-            msg = "Game interrupted!"
-            return (None, msg, self.board)
-        result = None
-        if self.board.is_checkmate():
-            msg = "checkmate: " + self.who(not self.board.turn) + " wins!"
-            result = not self.board.turn
-        elif self.board.is_stalemate():
-            msg = "draw: stalemate"
-        elif self.board.is_fivefold_repetition():
-            msg = "draw: 5-fold repetition"
-        elif self.board.is_insufficient_material():
-            msg = "draw: insufficient material"
-        elif self.board.can_claim_draw():
-            msg = "draw: claim"
-        print(self.board.result())
-        print(msg)
-
-        return (result, msg, self.board)
-
-    def who(self, player):
-        return "White" if player == chess.WHITE else "Black"
+            print("Game interrupted!")
+            return None
 
 if __name__ == "__main__":
-
     game = Game()
-    player1 = Random(game)
-    player2 = Random(game)
+    player1 = Naive()
+    player2 = Minimax(1)
 
-    game.play_game(player1, player2)
+    board = game.play_game(player1, player2)
+    print(board.result())
