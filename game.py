@@ -2,7 +2,7 @@ import chess
 import random
 from IPython.display import display, clear_output
 
-from players import Naive, Human, Minimax
+from players import Naive, Human, Minimax, MCTS
 
 class Game():
     def __init__(self):
@@ -29,7 +29,7 @@ class Game():
 if __name__ == "__main__":
     game = Game()
     player1 = Naive()
-    player2 = Minimax(1)
+    player2 = MCTS(10, 1.4)
 
     board = game.play_game(player1, player2)
     print(board.result())
