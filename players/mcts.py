@@ -56,14 +56,14 @@ class MCTS():
                 node.record_win(winner)
                 node = node.parent
 
-        scored_moves = [
-            (child.winning_frac(board.turn),
+        scored_moves = [(
+            child.winning_frac(board.turn),
             child.move,
-            child.num_rollouts) for child in root.children
-        ]
+            child.num_rollouts
+        ) for child in root.children]
         scored_moves.sort(key=lambda x: x[0], reverse=True)
-        for s, m, n in scored_moves[:10]:
-            print('%s - %.3f (%d)' % (m, s, n))
+        # for s, m, n in scored_moves[:10]:
+        #     print('%s - %.3f (%d)' % (m, s, n))
 
         best_move = None
         best_pct = -1.0
@@ -72,7 +72,7 @@ class MCTS():
             if child_pct > best_pct:
                 best_pct = child_pct
                 best_move = child.move
-        print('Select move %s with win pct %.3f' % (best_move, best_pct))
+        # print('Select move %s with win pct %.3f' % (best_move, best_pct))
         return best_move.uci()
 
     def select_child(self, node):
