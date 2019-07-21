@@ -59,7 +59,7 @@ class Net(nn.Module):
         x = x.view(-1, 128)
         x = self.last(x)
 
-        return F.tanh(x)
+        return torch.tanh(x)
 
 if __name__ == "__main__":
 
