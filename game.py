@@ -29,7 +29,7 @@ class Game():
 if __name__ == "__main__":
     game = Game()
     player1 = Naive()
-    player2 = DeepLearning()
+    player2 = MCTS(50, temperature=1.4)
 
     board = game.play_game(player1, player2)
     print(board.result())

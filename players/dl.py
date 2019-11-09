@@ -13,7 +13,7 @@ class DeepLearning:
     def move(self, board):
         state = State(board).serialize()
         state = np.expand_dims(state, axis=0)
-        state = torch.FloatTensor(state)
+        # state = torch.Float(state)
         output = self.model(state)
         print(output)
         # print(output.uci())
