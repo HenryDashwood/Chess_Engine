@@ -30,14 +30,14 @@ def convert_to_int(board):
 
 
 def bb2array(b):
-    x = np.zeros((8,8,12), dtype=np.int8)
+    x = np.zeros((12,8,8), dtype=np.int8)
     piece_list = convert_to_int(b)
 
     for pos, piece in enumerate(piece_list):
         if piece != 0:
             col = int(pos % 8)
             row = int(pos / 8)
-            x[row][col][piece-1] = 1
+            x[piece-1][row][col] = 1
 
     return x
 
@@ -51,7 +51,7 @@ def yield_board_state(game):
         yield board_array
 
 
-result_map = {'1-0': 1, '0-1': -1, '1/2-1/2': 0}
+result_map = {'1-0': 0, '1/2-1/2': 1, '0-1': 2}
 
 x, y = [], []
 i = 1
@@ -62,6 +62,10 @@ for game in yield_game_from_pgn(pgn):
     for board in yield_board_state(game):
         x.append(board)
         y.append(result)
+        
+x = np.asarray(x)
+y = np.asarray(y)
+        
 with open('data/board_states.pkl', 'wb') as f:
     pickle.dump(x, f)
 with open('data/results.pkl', 'wb') as f:
