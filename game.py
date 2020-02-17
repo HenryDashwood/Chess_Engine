@@ -28,8 +28,8 @@ class Game():
 
 if __name__ == "__main__":
     game = Game()
-    player1 = Naive()
-    player2 = DeepLearning()
+    player1 = Minimax(2)
+    player2 = Minimax(2)
 
     board = game.play_game(player1, player2)
     print(board.result())

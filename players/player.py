@@ -1,7 +1,7 @@
 class Player:
 
-    def __init__():
-        continue
+    def __init__(self):
+        pass
 
-    def move():
-        continue
+    def move(self):
+        pass

@@ -1,10 +1,11 @@
 import chess
+from .player import Player
 import random
 
 MAX_SCORE = 999999
 MIN_SCORE = -999999
 
-class Minimax:
+class Minimax(Player):
     def __init__(self, max_depth):
         self.max_depth = max_depth
 
